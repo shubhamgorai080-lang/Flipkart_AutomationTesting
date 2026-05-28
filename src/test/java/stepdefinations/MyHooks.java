@@ -18,6 +18,8 @@ public class MyHooks {
 	 //close the browser
 	   @After
 	   public void tearup() {
-		   Basetest.driver.quit();
+		   if (Basetest.driver != null) {
+	            Basetest.driver.quit(); // Closes all tabs, windows, and kills the driver process cleanly
+	        }
 	   }
 }
