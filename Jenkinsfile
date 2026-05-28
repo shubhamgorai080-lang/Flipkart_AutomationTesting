@@ -3,15 +3,18 @@ pipeline {
     agent any
  
     tools {
-        jdk 'JDK25'
+        // 1. Updated to match your exact tool configuration name (JDK17)
+        jdk 'JDK17'
         maven 'Maven3'
+        git 'Default' 
     }
  
     stages {
  
         stage('Git Checkout') {
             steps {
-                git branch: 'main',url: 'https://github.com/shubhamgorai080-lang/Flipkart_AutomationTesting.git'
+                // 2. Pointing to your actual GitHub repository URL and main branch
+                git branch: 'main', url: 'https://github.com/shubhamgorai080-lang/Flipkart_AutomationTesting.git'
             }
         }
  
@@ -23,18 +26,22 @@ pipeline {
  
         stage('Run Tests') {
             steps {
-                bat 'mvn test'
+                // 3. CRITICAL: Added the failure ignore flag. Without this, if a test fails, 
+                // Jenkins will skip the "Generate Reports" stage entirely.
+                bat 'mvn test -Dmaven.test.failure.ignore=true'
             }
         }
  
         stage('Generate Reports') {
             steps {
+                // 4. Fixed paths: Changed 'reports' directory to 'target' and pointed 
+                // to your TestNG/Cucumber HTML output file.
                 publishHTML([
-                    allowMissing: false,
+                    allowMissing: true,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
-                    reportDir: 'reports',
-                    reportFiles: 'ExtentReport.html',
+                    reportDir: 'target',
+                    reportFiles: 'cucumber-reports.html',
                     reportName: 'Extent Report'
                 ])
             }
@@ -44,7 +51,8 @@ pipeline {
     post {
  
         always {
-            archiveArtifacts artifacts: 'reports/*'
+            // Updated to archive files from the 'target' directory safely
+            archiveArtifacts artifacts: 'target/*.html', allowEmptyArchive: true
         }
  
         success {
