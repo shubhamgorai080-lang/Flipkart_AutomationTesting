@@ -4,7 +4,7 @@ pipeline {
  
     tools {
         // 1. Updated to match your exact tool configuration name (JDK17)
-        jdk 'JDK17'
+        jdk 'JDK25'
         maven 'Maven3'
         git 'Default' 
     }
