@@ -3,7 +3,7 @@ pipeline {
     agent any
  
     tools {
-        // 1. Updated to match your exact tool configuration name (JDK17)
+        // Matches your Global Tool Configuration names
         jdk 'JDK25'
         maven 'Maven3'
         git 'Default' 
@@ -13,7 +13,7 @@ pipeline {
  
         stage('Git Checkout') {
             steps {
-                // 2. Pointing to your actual GitHub repository URL and main branch
+                // Pulls cleanly from your repository path
                 git branch: 'main', url: 'https://github.com/shubhamgorai080-lang/Flipkart_AutomationTesting.git'
             }
         }
@@ -26,23 +26,21 @@ pipeline {
  
         stage('Run Tests') {
             steps {
-                // 3. CRITICAL: Added the failure ignore flag. Without this, if a test fails, 
-                // Jenkins will skip the "Generate Reports" stage entirely.
+                // Prevents test failures from abruptly crashing the pipeline build process
                 bat 'mvn test -Dmaven.test.failure.ignore=true'
             }
         }
  
-        stage('Generate Reports') {
+        stage('Publish Cucumber Report') {
             steps {
-                // 4. Fixed paths: Changed 'reports' directory to 'target' and pointed 
-                // to your TestNG/Cucumber HTML output file.
+                // Publishes your test report right onto the Jenkins Job dashboard sidebar
                 publishHTML([
                     allowMissing: true,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
                     reportDir: 'target',
                     reportFiles: 'cucumber-reports.html',
-                    reportName: 'Extent Report'
+                    reportName: 'Flipkart Cucumber Report'
                 ])
             }
         }
@@ -51,7 +49,7 @@ pipeline {
     post {
  
         always {
-            // Updated to archive files from the 'target' directory safely
+            // Safely captures all generated HTML documents into your Jenkins build artifact section
             archiveArtifacts artifacts: 'target/*.html', allowEmptyArchive: true
         }
  
@@ -64,3 +62,4 @@ pipeline {
         }
     }
 }
+
